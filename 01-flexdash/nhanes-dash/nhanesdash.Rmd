@@ -4,7 +4,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: rows
     social: menu
-    source_code: https://git.io/vaZdx
+    source_code: https://github.com/rstudio-education/shiny-rmed18/blob/master/01-flexdash/nhanesdash.Rmd
 runtime: shiny
 ---
 
