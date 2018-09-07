@@ -96,9 +96,11 @@ server <- function(input, output) {
   
   # Print data table if checked -------------------------------------
   output$nhanestable <- DT::renderDataTable({
-      DT::datatable(data = NHANES_subset()[, 1:7], 
+    if(input$showdata){
+      DT::datatable(data = NHANES[, 1:7], 
                     options = list(pageLength = 10, rownames = FALSE) 
-                    ) 
+      )  
+    }
   })
   
 }
