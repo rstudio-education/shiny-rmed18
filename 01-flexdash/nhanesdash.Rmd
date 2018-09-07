@@ -1,0 +1,172 @@
+---
+title: "NHANES explorer"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    social: menu
+    source_code: https://git.io/vaZdx
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(shiny)
+library(tidyverse)
+library(NHANES)
+library(DT)
+```
+
+Sidebar {.sidebar}
+=======================================================================
+
+### NHANES
+
+Filter the data for characteristics you're interested in studying:
+
+```{r}
+hr()
+
+checkboxGroupInput(inputId = "survey_year", label = "Survey year",
+                   choices = c("2011 - 2012" = "2011_12", 
+                               "2009 - 2010" = "2009_10"),
+                   selected = "2011_12")
+
+hr()
+
+sliderInput(inputId = "age", label = "Age range",
+            min = min(NHANES$Age), max = max(NHANES$Age),
+            value = c(18, 55))
+
+hr()
+
+checkboxGroupInput(inputId = "education", label = "Education level",
+                   choices = levels(NHANES$Education),
+                   selected = c("Some College", "College Grad"))
+
+sel_data <- reactive({
+  NHANES %>%
+    filter(
+      SurveyYr %in% input$survey_year,
+      between(Age, input$age[1], input$age[2]),
+      Education %in% input$education
+      ) 
+})
+```
+
+Dashboard
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### Percentage of NHANES sample {.value-box}
+
+```{r}
+renderGauge({
+  p <- round( nrow(sel_data()) / nrow(NHANES) * 100, 0)
+  gauge(p, min = 0, max = 100, symbol = "%", 
+        gaugeSectors(success = c(80, 100), warning = c(40, 79), 
+                     danger = c(0, 39)))
+})
+```
+
+### Average age {.value-box}
+
+```{r}
+renderValueBox({
+  valueBox(value = round(mean(sel_data()$Age), 2), icon = "glyphicon-time")
+})
+```
+
+### Percentage of smokers {.value-box}
+
+```{r}
+perc_smoker <- reactive({
+  sel_data() %>%
+    filter(!is.na(SmokeNow)) %>%
+    count(SmokeNow) %>%
+    mutate(p = n / sum(n)) %>% 
+    slice(2) %>% 
+    pull(p)
+})
+renderValueBox({
+  valueBox(value = scales::percent(perc_smoker()), 
+           icon = "glyphicon-thumbs-down")
+})
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Alcohol consumption - plot {data-width=700}
+
+The x-axis in the plot below shows the estimated number of days over the past 
+year that the participants drank alcoholic beverages. This variable is reported for 
+participants aged 18 years or older.
+
+Examine the relationship between alcohol consumption and ...
+
+```{r}
+selectInput(inputId = "x", label = "",
+            choices = c("Trouble sleeping" = "SleepTrouble",
+                        "Marijuana use" = "Marijuana", 
+                        "Hard drug use" = "HardDrugs",
+                        "Physically active" = "PhysActive"),
+            selected = "SleepTrouble")
+
+xlab <- reactive({
+  case_when(
+    input$x == "SleepTrouble" ~ "Trouble sleeping",
+    input$x == "Marijuana" ~ "Marijuana use",
+    input$x == "HardDrugs" ~ "Hard drug use",
+    input$x == "PhysActive" ~ "Physically active"
+  )
+})
+```
+
+
+```{r}
+renderPlot({
+  ggplot(data = sel_data(), 
+         mapping = aes_string(x = input$x, y = "AlcoholYear")) +
+    geom_boxplot() +
+    coord_flip() +
+    labs(x = xlab(), y = "")}, 
+  height = 275, width = 650)
+```
+
+### Alcohol consumption - summary {data-width=340}
+
+```{r}
+group_vars <- reactive({ syms(input$x) })
+
+renderTable({
+  sel_data() %>%
+    group_by( !!!group_vars() ) %>%
+    summarise(Mean = mean(AlcoholYear, na.rm = TRUE),
+              Median = median(AlcoholYear, na.rm = TRUE))
+})
+```
+
+Data
+=======================================================================
+
+### About the data
+
+This [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/) uses data 
+from the American National Health and Nutrition Examination surveys (NHANES). 
+Specifically, the data come from the [NHANES package ](https://cran.r-project.org/web/packages/NHANES/), which provides 
+modified versions of NHANES data for educational purposes. The package author 
+cautions that the package is "NOT suitable for use as a research database".
+
+The data used in the analysis is shown below.
+
+```{r}
+renderDataTable({
+  datatable(
+    sel_data() %>%
+      select(AlcoholYear, SleepTrouble, Marijuana, HardDrugs, PhysActive)
+    )
+})
+```
+
