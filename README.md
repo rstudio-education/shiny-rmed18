@@ -1,37 +1,21 @@
-## Welcome to GitHub Pages
+## Shiny Essentials - R/Medicine 2018
 
-You can use the [editor on GitHub](https://github.com/rstudio-education/shiny-rmed18/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+This repository contains materials for the Shiny Essentials workshop at [R/Medicine 2018](http://r-medicine.com/). 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Slides
 
-### Markdown
+- **00-welcome**: [Welcome](00-welcome/00-welcome.pdf)
+- **01-flexdash**: [Building dashboards with flexdashboard](01-flexdash/01-flexdash.pdf)
+  - Dashboard: https://gallery.shinyapps.io/nhanesdash/
+- **02-shiny**: [Getting started with Shiny](02-shiny/02-shiny.pdf)
+- **03-reactivity**: [Understanding reactivity](03-reactivity/03-reactivity.pdf)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### Code
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/rstudio-education/shiny-rmed18/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+- **01-flexdash**: [Dashboard code](01-flexdash/nhanes-dash/)
+- **02-shiny**: 
+  - [Google index](02-shiny/goog-index/)
+  - [NHANES apps](02-shiny/nhanes-apps/)
+- **03-reactivity**:
+  - [More NHANES apps](03-reactivity/nhanes-apps/)
+  - [Review](03-reactivity/review/)
